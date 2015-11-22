@@ -190,6 +190,7 @@ func createTrip(rw http.ResponseWriter, req *http.Request, p httprouter.Params){
 			}
 		}
 	}
+	fmt.Println(nodeMatrix)
 	pathArr := make([]string,destinationsNum)
 	var min float64 = 0
 	var minIndex int = 0
@@ -206,12 +207,21 @@ func createTrip(rw http.ResponseWriter, req *http.Request, p httprouter.Params){
 			if(minIndex!=j && arrContains(pathCoveredArr,j)=="false"){
 				if nodeMatrix[l][j].Distance < min{
 					min = nodeMatrix[l][j].Distance	
-					totalFare = totalFare + nodeMatrix[l][j].Fare
-					totalDuration = totalDuration + nodeMatrix[l][j].Duration
-					totalDistance = totalDistance + nodeMatrix[l][j].Distance
 					minIndex = j
 				}			
 			}
+		}
+		fmt.Println(l)
+		fmt.Println(minIndex)
+		if(k==destinationsNum-1){
+			totalFare = totalFare + nodeMatrix[l][0].Fare
+			totalDuration = totalDuration + nodeMatrix[l][0].Duration
+			totalDistance = totalDistance + nodeMatrix[l][0].Distance
+		}else{
+			totalFare = totalFare + nodeMatrix[l][minIndex].Fare
+			totalDuration = totalDuration + nodeMatrix[l][minIndex].Duration
+			totalDistance = totalDistance + nodeMatrix[l][minIndex].Distance
+
 		}
 		l = minIndex
 		k = k+1
@@ -445,9 +455,10 @@ func uberGetCost(iLatitude float64, ilongitude float64, fLatitude float64, flong
 	    if(err == nil) {
 	        var data interface{}
 	        json.Unmarshal(body, &data)
-	        var m = data.(map[string] interface{})            
+	        var m = data.(map[string] interface{})     
+	        fmt.Println(m)       
 	        var articles = m["prices"].([]interface{})[0]
-	        fare := articles.(map[string]interface{})["high_estimate"].(float64)
+	        fare := articles.(map[string]interface{})["low_estimate"].(float64)
 	        distance := articles.(map[string]interface{})["distance"].(float64)
 	        duration := articles.(map[string]interface{})["duration"].(float64)
 	        return fare, distance ,duration
@@ -534,7 +545,7 @@ func updateTrip(rw http.ResponseWriter, req *http.Request, p httprouter.Params) 
 	jsonUber.Product_id = "04a497f5-380d-47f2-bf1b-ad4cfdcb51f2"
 	jsonUberMar, err := json.Marshal(jsonUber)
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(jsonUberMar))
-	req.Header.Set("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsicHJvZmlsZSIsInJlcXVlc3QiLCJyZXF1ZXN0X3JlY2VpcHQiLCJoaXN0b3J5X2xpdGUiXSwic3ViIjoiMDFiNTkwNzktYTIyMy00NmRiLTk2NTktZjYwNGFkMWY1OWI4IiwiaXNzIjoidWJlci11czEiLCJqdGkiOiI1MzU5MzIzMi0wNmYzLTQyNWItODI1ZC1lYzk5NTU0Yjg1ZmMiLCJleHAiOjE0NTA3NTcwNDEsImlhdCI6MTQ0ODE2NTA0MSwidWFjdCI6InJmUTNmWXB3elRPNVNuRU5vMkIzbE1UVVpDUEVudCIsIm5iZiI6MTQ0ODE2NDk1MSwiYXVkIjoiWmhsaVZsWEhka3U2UlFiSEFqdmM4aUh6bjhjQXk1TDkifQ.oDzvT5QnpEHYgLvzRHxoLoyIYuu7fEkkuq7Q5kbTWOqr34esAJGryayhXYFNKUME56dOWifbHeJDXw0VolffCNiEqvQVkAFHTqnrJJs-hEhJFORY6b-p78837leOlHGWnP56U-7jM1oSvd_preUOL2ud5FhHGmj3ZCXU4gGkP3Qo2uDGCfHLz3meX_nL15aHqCpIS0I_STPm5dTL3bI2AW0QoKK0X5sEXanaG5AxaRg5RxkKmRXYG7LWuO2tT-JW8hpFxYlPG-wwei_Ws7STqxoaaM7b1XpJTT5q7nOU0CDXPkR5n-iJjm2LP9WQzodFQg70mlZugHPkKST4wov3WQ")
+	req.Header.Set("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZXMiOlsicHJvZmlsZSIsInJlcXVlc3QiLCJyZXF1ZXN0X3JlY2VpcHQiLCJoaXN0b3J5X2xpdGUiXSwic3ViIjoiMDFiNTkwNzktYTIyMy00NmRiLTk2NTktZjYwNGFkMWY1OWI4IiwiaXNzIjoidWJlci11czEiLCJqdGkiOiIxOTczOTY1Ny0yNGQyLTRkMGMtYTc2Zi04MzdmM2ZhNTg1NzkiLCJleHAiOjE0NTA3ODA0NzAsImlhdCI6MTQ0ODE4ODQ2OSwidWFjdCI6IklxTHdhb0VuSWxFN3hDdEVnWW85aUl4d1Z4YnlRQyIsIm5iZiI6MTQ0ODE4ODM3OSwiYXVkIjoiWmhsaVZsWEhka3U2UlFiSEFqdmM4aUh6bjhjQXk1TDkifQ.Xd1ex423mLad33UuwFeHq3q4lrbKHfUx3w9NdIbc0cRX3YuirWYk1P1LsaZ6rgNwtkhigN1vPzOKkp9y--2Hhw7Uzpek-PbVqeHHzKMS7pvPdX57FLVORZ6zYHUkuP_Zwqyd_-N79XS7-4o9ng70TmRMZoM52A2i67x0fuMcwXFLUmgRU_XMGBg_gXRmogHdHtV_e1xNdZ5IChKKCXGRIx4CauKRN-kMl_QWXcY6LWCIBcGSUHr9vPElz0PlWZjLX2KwNyBdaaBIgE-V-K5ve-5m30MnGhgplONhcMokp19xLH9Mv5ZrdJIukJ4zhuqNlYO7NsELSffWQQq_7NTpuQ")
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
