@@ -4,11 +4,8 @@ The trip planner is a feature that takes a set of locations from the database an
 UBER Price Estimates Resource used: GET /v1/estimates/price
 Its using UBER Sandbox environment for all API calls.
  
-Example:
-Get coordinates of 1600 Amphitheatre Parkway, Mountain View, CA.
-http://maps.google.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,+Mountain+View,+CA&sensor=false
-
-* POST        /trips   # Plan a trip
+##Plan a trip
+* POST   /trips  
 ```
 Request
 {
@@ -29,7 +26,7 @@ Response
 }
 
 ```
-* GET        /trips/{trip_id} # Check the trip details and status
+* GET  /trips/{trip_id} # Check the trip details and status
 ```
 Request:
 GET             /trips/1122
