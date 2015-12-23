@@ -26,7 +26,8 @@ Response
 }
 
 ```
-* GET  /trips/{trip_id} # Check the trip details and status
+## Check the trip details and status
+* GET  /trips/{trip_id}
 ```
 Request:
 GET             /trips/1122
@@ -44,8 +45,8 @@ Response:
 }
 
 ```
-* PUT /v1/sandbox/requests/{request_id}
 Once a destination is reached, the subsequent call the API will request a car for the next destination.
+* PUT /v1/sandbox/requests/{request_id}
 ```
 Request:
  /trips/1122/request
